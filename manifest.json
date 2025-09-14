@@ -5,5 +5,14 @@
   "version": "1.0",
   "action": {
     "default_popup": "popup.html"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+      "https://chat.openai.com/*",
+      "https://chatgpt.com/*"
+        ],
+      "js": ["content.js"]
+    }
+  ]
 }

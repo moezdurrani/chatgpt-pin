@@ -3,9 +3,10 @@ console.log("ChatGPT Pin Extension content script loaded!");
 // Function to add a pin button under each message
 function addPinButtons() {
   document.querySelectorAll('[data-message-id]').forEach(el => {
-    // Avoid adding duplicate buttons
+    // ✅ This already prevents duplicate buttons
     if (el.querySelector(".pin-button")) return;
-    el.style.outline = "1px solid red";
+
+    el.style.outline = "1px solid red"; // debugging highlight
 
     // Create pin button
     const pinBtn = document.createElement("button");

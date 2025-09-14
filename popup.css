@@ -1,11 +1,24 @@
 body {
-  font-family: sans-serif;
-  padding: 15px;
-  width: 220px;
-  text-align: center;
+  font-family: Arial, sans-serif;
+  padding: 10px;
+  width: 300px;
 }
 
-h1 {
-  font-size: 18px;
-  color: #333;
+h2 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+#pins-list {
+  list-style: none;
+  padding: 0;
+}
+
+#pins-list li {
+  margin-bottom: 8px;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #f9f9f9;
+  font-size: 13px;
 }

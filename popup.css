@@ -1,15 +1,13 @@
 body {
   font-family: Arial, sans-serif;
-  font-size: 14px;
-  margin: 10px;
-  width: 300px;
+  padding: 10px;
+  min-width: 220px;   /* smaller default */
+  max-width: 260px;   /* keep it from stretching too wide */
 }
 
 h2 {
-  margin-top: 0;
-  font-size: 16px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 5px;
+  font-size: 14px;
+  margin-bottom: 8px;
 }
 
 #pin-list {
@@ -18,47 +16,40 @@ h2 {
   margin: 0;
 }
 
-#pin-list li {
+.pin-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 13px;
+  padding: 4px 0;
+  border-bottom: 1px solid #eee;
+  gap: 6px;
 }
 
-#pin-list li span {
+.pin-user,
+.pin-assistant {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-right: 10px;
-}
-
-.pin-item {
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid #ddd;
-  padding: 5px;
-  position: relative;
-}
-
-.pin-user {
-  font-weight: bold;
+  font-size: 12px;
+  line-height: 1.4;
   color: #333;
-  margin-bottom: 2px;
-}
-
-.pin-assistant {
-  font-style: italic;
-  color: #666;
 }
 
 .remove-btn {
-  position: absolute;
-  top: 5px;
-  right: 5px;
+  background: none;
   border: none;
-  background: transparent;
   cursor: pointer;
+  padding: 0;
+}
+
+.remove-btn img {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.remove-btn img:hover {
+  opacity: 1;
 }

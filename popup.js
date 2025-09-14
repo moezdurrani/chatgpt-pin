@@ -16,13 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
         li.className = "pin-item";
 
         // User text
-        const userSpan = document.createElement("div");
+        const userSpan = document.createElement("span");
         userSpan.textContent = pin.user;
         userSpan.className = "pin-user";
         userSpan.title = pin.user;
 
         // Assistant text
-        const assistantSpan = document.createElement("div");
+        const assistantSpan = document.createElement("span");
         assistantSpan.textContent = pin.assistant;
         assistantSpan.className = "pin-assistant";
         assistantSpan.title = pin.assistant;

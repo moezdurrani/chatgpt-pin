@@ -15,28 +15,34 @@ document.addEventListener("DOMContentLoaded", () => {
         const li = document.createElement("li");
         li.className = "pin-item";
 
-        const span = document.createElement("span");
-        span.textContent = pin.text;
-        span.title = pin.text; // Tooltip with full text
+        // User text
+        const userSpan = document.createElement("div");
+        userSpan.textContent = pin.user;
+        userSpan.className = "pin-user";
+        userSpan.title = pin.user;
 
-        // Use unpin icon instead of "X"
+        // Assistant text
+        const assistantSpan = document.createElement("div");
+        assistantSpan.textContent = pin.assistant;
+        assistantSpan.className = "pin-assistant";
+        assistantSpan.title = pin.assistant;
+
+        // Remove button
         const removeBtn = document.createElement("button");
+        const removeIcon = document.createElement("img");
+        removeIcon.src = chrome.runtime.getURL("icons/unpin-light-mode.svg");
+        removeIcon.style.width = "14px";
+        removeIcon.style.height = "14px";
+        removeBtn.appendChild(removeIcon);
         removeBtn.className = "remove-btn";
-
-        const icon = document.createElement("img");
-        icon.src = chrome.runtime.getURL("icons/unpin-light-mode.svg");
-        icon.alt = "Unpin";
-        icon.style.width = "14px";
-        icon.style.height = "14px";
-
-        removeBtn.appendChild(icon);
 
         removeBtn.addEventListener("click", () => {
           pins.splice(index, 1);
-          chrome.storage.local.set({ pins }, loadPins); // refresh list
+          chrome.storage.local.set({ pins }, loadPins);
         });
 
-        li.appendChild(span);
+        li.appendChild(userSpan);
+        li.appendChild(assistantSpan);
         li.appendChild(removeBtn);
         pinList.appendChild(li);
       });

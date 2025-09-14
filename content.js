@@ -12,19 +12,25 @@ function addPinButtons() {
 
     // Create pin button
     const pinBtn = document.createElement("button");
-    pinBtn.innerText = "📌 Pin";
     pinBtn.className = "pin-button";
     pinBtn.style.marginLeft = "10px";
     pinBtn.style.cursor = "pointer";
     pinBtn.style.border = "none";
     pinBtn.style.background = "transparent";
-    pinBtn.style.color = "#555";
+    pinBtn.style.padding = "2px";
+
+    // Add an <img> inside the button
+    const icon = document.createElement("img");
+    icon.src = chrome.runtime.getURL("icons/pin-dark-mode.svg"); // default is Pin
+    icon.style.width = "16px";
+    icon.style.height = "16px";
+    pinBtn.appendChild(icon);
 
     // Initialize button state from storage
     chrome.storage.local.get(["pins"], (result) => {
       const pins = result.pins || [];
       if (pins.some(p => p.id === messageId)) {
-        setUnpinStyle(pinBtn);
+        icon.src = chrome.runtime.getURL("icons/unpin-dark-mode.svg");
       }
     });
 
@@ -40,13 +46,13 @@ function addPinButtons() {
           // Not pinned yet → add it
           pins.push({ id: messageId, text });
           chrome.storage.local.set({ pins });
-          setUnpinStyle(pinBtn);
+          icon.src = chrome.runtime.getURL("icons/unpin-dark-mode.svg");
           console.log("Pinned message:", { messageId, text });
         } else {
           // Already pinned → remove it
           pins.splice(index, 1);
           chrome.storage.local.set({ pins });
-          setPinStyle(pinBtn);
+          icon.src = chrome.runtime.getURL("icons/pin-dark-mode.svg");
           console.log("Unpinned message:", { messageId });
         }
       });
@@ -58,30 +64,18 @@ function addPinButtons() {
   });
 }
 
-// Helper to style as Pin
-function setPinStyle(btn) {
-  btn.innerText = "📌 Pin";
-  btn.style.color = "#555";
-}
-
-// Helper to style as Unpin
-function setUnpinStyle(btn) {
-  btn.innerText = "❌ Unpin";
-  btn.style.color = "red";
-}
-
-// Listen for storage changes (e.g., when popup removes a pin)
+// Listen for storage changes (sync buttons with popup removals)
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && changes.pins) {
     const newPins = changes.pins.newValue || [];
     document.querySelectorAll('[data-message-id]').forEach(el => {
-      const btn = el.querySelector(".pin-button");
+      const btn = el.querySelector(".pin-button img");
       if (!btn) return;
       const messageId = el.getAttribute("data-message-id");
       if (newPins.some(p => p.id === messageId)) {
-        setUnpinStyle(btn);
+        btn.src = chrome.runtime.getURL("icons/unpin-dark-mode.svg");
       } else {
-        setPinStyle(btn);
+        btn.src = chrome.runtime.getURL("icons/pin-dark-mode.svg");
       }
     });
   }

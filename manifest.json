@@ -15,5 +15,12 @@
       ],
       "js": ["content.js"]
     }
-  ]
+  ],
+  "web_accessible_resources": [
+  {
+    "resources": ["icons/*.svg"],
+    "matches": ["<all_urls>"]
+  }
+]
+
 }

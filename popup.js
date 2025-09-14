@@ -19,9 +19,17 @@ document.addEventListener("DOMContentLoaded", () => {
         span.textContent = pin.text;
         span.title = pin.text; // Tooltip with full text
 
+        // Use unpin icon instead of "X"
         const removeBtn = document.createElement("button");
-        removeBtn.textContent = "X";
         removeBtn.className = "remove-btn";
+
+        const icon = document.createElement("img");
+        icon.src = chrome.runtime.getURL("icons/unpin-light-mode.svg");
+        icon.alt = "Unpin";
+        icon.style.width = "14px";
+        icon.style.height = "14px";
+
+        removeBtn.appendChild(icon);
 
         removeBtn.addEventListener("click", () => {
           pins.splice(index, 1);

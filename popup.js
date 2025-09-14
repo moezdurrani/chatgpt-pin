@@ -1,0 +1,1 @@
+console.log("ChatGPT Pin Extension loaded!");

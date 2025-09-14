@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT Pin Extension",
-  "description": "A very simple Chrome extension starter.",
+  "description": "Pin and unpin ChatGPT messages with ease.",
   "version": "1.0",
   "action": {
     "default_popup": "popup.html"

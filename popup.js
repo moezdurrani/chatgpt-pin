@@ -1,34 +1,39 @@
 document.addEventListener("DOMContentLoaded", () => {
   const pinList = document.getElementById("pin-list");
 
-  // Load pinned messages
-  chrome.storage.local.get(["pins"], (result) => {
-    const pins = result.pins || [];
+  function loadPins() {
+    chrome.storage.local.get(["pins"], (result) => {
+      const pins = result.pins || [];
+      pinList.innerHTML = "";
 
-    pins.forEach((pin, index) => {
-      const li = document.createElement("li");
+      if (pins.length === 0) {
+        pinList.innerHTML = "<li>No pinned messages yet.</li>";
+        return;
+      }
 
-      // Shortened preview text
-      const span = document.createElement("span");
-      span.textContent = pin.text;
-      span.title = pin.text; // Tooltip shows full text on hover
+      pins.forEach((pin, index) => {
+        const li = document.createElement("li");
+        li.className = "pin-item";
 
-      // Remove button
-      const removeBtn = document.createElement("button");
-      removeBtn.textContent = "X";
-      removeBtn.className = "remove-btn";
+        const span = document.createElement("span");
+        span.textContent = pin.text;
+        span.title = pin.text; // Tooltip with full text
 
-      removeBtn.addEventListener("click", () => {
-        // Remove this pin from the array
-        pins.splice(index, 1);
-        chrome.storage.local.set({ pins }, () => {
-          li.remove();
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "X";
+        removeBtn.className = "remove-btn";
+
+        removeBtn.addEventListener("click", () => {
+          pins.splice(index, 1);
+          chrome.storage.local.set({ pins }, loadPins); // refresh list
         });
-      });
 
-      li.appendChild(span);
-      li.appendChild(removeBtn);
-      pinList.appendChild(li);
+        li.appendChild(span);
+        li.appendChild(removeBtn);
+        pinList.appendChild(li);
+      });
     });
-  });
+  }
+
+  loadPins();
 });

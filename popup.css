@@ -1,24 +1,45 @@
 body {
   font-family: Arial, sans-serif;
-  padding: 10px;
+  font-size: 14px;
+  margin: 10px;
   width: 300px;
 }
 
 h2 {
+  margin-top: 0;
   font-size: 16px;
-  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
 }
 
-#pins-list {
+#pin-list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
-#pins-list li {
-  margin-bottom: 8px;
-  padding: 6px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: #f9f9f9;
+#pin-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
   font-size: 13px;
+}
+
+#pin-list li span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 10px;
+}
+
+.remove-btn {
+  color: red;
+  cursor: pointer;
+  font-weight: bold;
+  border: none;
+  background: none;
+  padding: 0 5px;
 }

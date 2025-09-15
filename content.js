@@ -20,16 +20,16 @@ function addPinButtons() {
     pinBtn.style.cursor = "pointer";
     pinBtn.style.border = "none";
     pinBtn.style.background = "transparent";
-    pinBtn.style.marginBottom = "5px"; // spacing from the text
+    pinBtn.style.marginBottom = "5px";
 
     const icon = document.createElement("img");
     icon.src = chrome.runtime.getURL("icons/pin-dark-mode.svg");
-    icon.style.width = "22px";   // ⬅ bigger size
+    icon.style.width = "22px";
     icon.style.height = "22px";
-    icon.style.display = "block"; // force it to stay above
+    icon.style.display = "block";
     pinBtn.appendChild(icon);
 
-    // Initialize state
+    // Initialize state from storage
     chrome.storage.local.get(["pins"], (result) => {
       const pins = result.pins || [];
       if (pins.some(p => p.id === messageId)) {
@@ -50,16 +50,12 @@ function addPinButtons() {
         const index = pins.findIndex(p => p.id === messageId);
 
         if (index === -1) {
-          // Save as one pair
           pins.push({ id: messageId, user: userText, assistant: assistantText });
           chrome.storage.local.set({ pins });
-          icon.src = chrome.runtime.getURL("icons/unpin-dark-mode.svg");
           console.log("Pinned pair:", { userText, assistantText });
         } else {
-          // Remove pair
           pins.splice(index, 1);
           chrome.storage.local.set({ pins });
-          icon.src = chrome.runtime.getURL("icons/pin-dark-mode.svg");
           console.log("Unpinned:", { messageId });
         }
       });
@@ -69,5 +65,22 @@ function addPinButtons() {
     el.insertBefore(pinBtn, el.firstChild);
   });
 }
+
+// Update buttons immediately when storage changes
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "local" && changes.pins) {
+    const newPins = changes.pins.newValue || [];
+    document.querySelectorAll('[data-message-id]').forEach(el => {
+      const btn = el.querySelector(".pin-button img");
+      if (!btn) return;
+      const messageId = el.getAttribute("data-message-id");
+      if (newPins.some(p => p.id === messageId)) {
+        btn.src = chrome.runtime.getURL("icons/unpin-dark-mode.svg");
+      } else {
+        btn.src = chrome.runtime.getURL("icons/pin-dark-mode.svg");
+      }
+    });
+  }
+});
 
 setInterval(addPinButtons, 2000);

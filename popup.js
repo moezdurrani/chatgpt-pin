@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         removeBtn.addEventListener("click", () => {
           pins.splice(index, 1);
-          chrome.storage.local.set({ pins }, loadPins);
+          chrome.storage.local.set({ pins }); // no loadPins here
         });
 
         li.appendChild(userSpan);
@@ -49,5 +49,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Initial load
   loadPins();
+
+  // Refresh when storage changes
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "local" && changes.pins) {
+      loadPins();
+    }
+  });
 });

@@ -15,13 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const li = document.createElement("li");
         li.className = "pin-item";
 
-        // User text
+        // User text (preview only)
         const userSpan = document.createElement("span");
         userSpan.textContent = pin.user;
         userSpan.className = "pin-user";
         userSpan.title = pin.user;
 
-        // Assistant text
+        // Assistant text (preview only)
         const assistantSpan = document.createElement("span");
         assistantSpan.textContent = pin.assistant;
         assistantSpan.className = "pin-assistant";
@@ -36,9 +36,18 @@ document.addEventListener("DOMContentLoaded", () => {
         removeBtn.appendChild(removeIcon);
         removeBtn.className = "remove-btn";
 
-        removeBtn.addEventListener("click", () => {
+        // Remove pin (don’t trigger detail view)
+        removeBtn.addEventListener("click", (event) => {
+          event.stopPropagation(); // ⛔ prevent li click handler
           pins.splice(index, 1);
-          chrome.storage.local.set({ pins }); // no loadPins here
+          chrome.storage.local.set({ pins }); // storage listener will refresh UI
+        });
+
+        // ✅ Open details page when clicking the pin item
+        li.addEventListener("click", () => {
+          chrome.tabs.create({
+            url: chrome.runtime.getURL("details.html?id=" + encodeURIComponent(pin.id))
+          });
         });
 
         li.appendChild(userSpan);

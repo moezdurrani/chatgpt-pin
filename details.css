@@ -1,0 +1,38 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 15px;
+  background: #f9f9f9;
+}
+
+.details-container {
+  margin-bottom: 20px;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  background: white;
+}
+
+.message.user {
+  border-left: 4px solid #007bff;
+}
+
+.message.assistant {
+  border-left: 4px solid #28a745;
+}
+
+.back-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background: #0056b3;
+}

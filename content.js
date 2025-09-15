@@ -23,6 +23,20 @@ function getIcon(isPinned) {
     }
 }
 
+// Find the *next assistant message* after this user message
+function getNextAssistantMessage(userEl) {
+    const allMessages = Array.from(document.querySelectorAll("[data-message-id]"));
+    const index = allMessages.indexOf(userEl);
+    if (index === -1) return "";
+
+    for (let i = index + 1; i < allMessages.length; i++) {
+        if (allMessages[i].getAttribute("data-message-author-role") === "assistant") {
+            return allMessages[i].innerText;
+        }
+    }
+    return "";
+}
+
 function addPinButtons() {
     document.querySelectorAll('[data-message-id]').forEach(el => {
         const messageId = el.getAttribute("data-message-id");
@@ -51,16 +65,12 @@ function addPinButtons() {
         icon.style.cursor = "pointer";
         pinBtn.appendChild(icon);
 
+        // Hover background like ChatGPT
         pinBtn.addEventListener("mouseenter", () => {
-            if (getTheme() === "dark") {
-                pinBtn.style.background = "rgb(48, 48, 48)";
-            } else {
-                pinBtn.style.background = "rgb(232, 232, 232)";
-            }
+            pinBtn.style.background = getTheme() === "dark" ? "rgb(48, 48, 48)" : "rgb(232, 232, 232)";
         });
-
         pinBtn.addEventListener("mouseleave", () => {
-            pinBtn.style.background = "transparent"; // reset
+            pinBtn.style.background = "transparent";
         });
 
         // Initialize state
@@ -73,21 +83,20 @@ function addPinButtons() {
         // Handle click
         pinBtn.addEventListener("click", () => {
             const userText = el.innerText;
-            const nextMsg = el.nextElementSibling?.querySelector('[data-message-id]');
-            const assistantText = nextMsg ? nextMsg.innerText : "";
+            const assistantText = getNextAssistantMessage(el); // ✅ FIXED
 
             chrome.storage.local.get(["pins"], (result) => {
                 let pins = result.pins || [];
                 const index = pins.findIndex(p => p.id === messageId);
 
                 if (index === -1) {
-                    // Add new pin
+                    // Save user + assistant pair
                     pins.push({ id: messageId, user: userText, assistant: assistantText });
                     chrome.storage.local.set({ pins });
                     icon.src = getIcon(true);
                     console.log("Pinned pair:", { userText, assistantText });
                 } else {
-                    // Remove pin
+                    // Remove pair
                     pins.splice(index, 1);
                     chrome.storage.local.set({ pins });
                     icon.src = getIcon(false);
@@ -96,6 +105,7 @@ function addPinButtons() {
             });
         });
 
+        // Place above the user’s message
         el.insertBefore(pinBtn, el.firstChild);
     });
 }

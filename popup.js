@@ -15,11 +15,53 @@ document.addEventListener("DOMContentLoaded", () => {
         const li = document.createElement("li");
         li.className = "pin-item";
 
-        // Show title instead of full user text
+        // Show title
         const titleSpan = document.createElement("span");
         titleSpan.textContent = pin.title || "(Untitled)";
         titleSpan.className = "pin-title";
         titleSpan.title = pin.title || "(Untitled)";
+
+        // Edit button
+        const editBtn = document.createElement("button");
+        const editIcon = document.createElement("img");
+        editIcon.src = chrome.runtime.getURL("icons/edit-light-mode.svg");
+        editIcon.style.width = "14px";
+        editIcon.style.height = "14px";
+        editBtn.appendChild(editIcon);
+        editBtn.className = "edit-btn";
+
+        editBtn.addEventListener("click", (event) => {
+          event.stopPropagation(); // prevent triggering detail view
+
+          // Replace span with input
+          const input = document.createElement("input");
+          input.type = "text";
+          input.value = pin.title || "";
+          input.className = "pin-title-input";
+
+          li.replaceChild(input, titleSpan);
+          input.focus();
+
+          // Save on Enter or blur
+          function saveTitle() {
+            const newTitle = input.value.trim() || "(Untitled)";
+            pins[index].title = newTitle;
+            chrome.storage.local.set({ pins });
+
+            // Restore span
+            titleSpan.textContent = newTitle;
+            titleSpan.title = newTitle;
+            li.replaceChild(titleSpan, input);
+          }
+
+          input.addEventListener("blur", saveTitle);
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") saveTitle();
+            if (e.key === "Escape") {
+              li.replaceChild(titleSpan, input); // cancel
+            }
+          });
+        });
 
         // Remove button
         const removeBtn = document.createElement("button");
@@ -30,14 +72,13 @@ document.addEventListener("DOMContentLoaded", () => {
         removeBtn.appendChild(removeIcon);
         removeBtn.className = "remove-btn";
 
-        // Remove pin (don’t trigger detail view)
         removeBtn.addEventListener("click", (event) => {
-          event.stopPropagation(); // ⛔ prevent li click handler
+          event.stopPropagation();
           pins.splice(index, 1);
           chrome.storage.local.set({ pins });
         });
 
-        // ✅ Open details page when clicking the pin item
+        // Open details page when clicking the pin item (but not icons)
         li.addEventListener("click", () => {
           chrome.tabs.create({
             url: chrome.runtime.getURL("details.html?id=" + encodeURIComponent(pin.id))
@@ -45,16 +86,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         li.appendChild(titleSpan);
+        li.appendChild(editBtn);
         li.appendChild(removeBtn);
         pinList.appendChild(li);
       });
     });
   }
 
-  // Initial load
   loadPins();
 
-  // Refresh when storage changes
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "local" && changes.pins) {
       loadPins();

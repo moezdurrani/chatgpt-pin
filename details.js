@@ -7,66 +7,69 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Helper: create copy button with tooltip
   function createCopyButton(textToCopy) {
-  const btn = document.createElement("button");
-  btn.className = "copy-btn";
+    const btn = document.createElement("button");
+    btn.className = "copy-btn";
 
-  const icon = document.createElement("img");
-  icon.src = chrome.runtime.getURL("icons/copy.svg");
-  btn.appendChild(icon);
+    const icon = document.createElement("img");
+    icon.src = chrome.runtime.getURL("icons/copy.svg");
+    btn.appendChild(icon);
 
-  // Tooltip (now absolutely positioned)
-  const tooltip = document.createElement("span");
-  tooltip.className = "tooltip";
-  tooltip.textContent = "Copy";
-  btn.appendChild(tooltip);
+    const tooltip = document.createElement("span");
+    tooltip.className = "tooltip";
+    tooltip.textContent = "Copy";
+    btn.appendChild(tooltip);
 
-  btn.addEventListener("mouseenter", () => {
-    tooltip.style.opacity = "1";
-  });
-  btn.addEventListener("mouseleave", () => {
-    tooltip.style.opacity = "0";
-    tooltip.textContent = "Copy"; // reset
-  });
-
-  btn.addEventListener("click", () => {
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      tooltip.textContent = "Copied ✓";
+    btn.addEventListener("mouseenter", () => {
       tooltip.style.opacity = "1";
-
-      setTimeout(() => {s
-        tooltip.style.opacity = "0";
-        tooltip.textContent = "Copy";
-      }, 2000);
     });
-  });
+    btn.addEventListener("mouseleave", () => {
+      tooltip.style.opacity = "0";
+      tooltip.textContent = "Copy";
+    });
 
-  return btn;
-}
+    btn.addEventListener("click", () => {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        tooltip.textContent = "Copied ✓";
+        tooltip.style.opacity = "1";
+        setTimeout(() => {
+          tooltip.style.opacity = "0";
+          tooltip.textContent = "Copy";
+        }, 2000);
+      });
+    });
 
+    return btn;
+  }
 
   chrome.storage.local.get(["pins"], (result) => {
     const pins = result.pins || [];
-    const pin = pins.find(p => p.id === pinId);
+    const pin = pins.find((p) => p.id === pinId);
     if (!pin) {
       pinContent.innerHTML = "<p>Pin not found.</p>";
       return;
     }
 
-    pinTitle.textContent = pin.title || pin.user.slice(0, 80) + "…";
+    pinTitle.textContent = pin.title || (pin.user ? pin.user.slice(0, 80) + "…" : "(Untitled)");
 
     // User block
     const userDiv = document.createElement("div");
     userDiv.className = "pin-block pin-user";
-    // userDiv.innerHTML = `<strong>You:</strong><br>${pin.user}`;
-    userDiv.innerHTML = `${pin.user}`;
-    userDiv.appendChild(createCopyButton(pin.user));
+    if (pin.userHtml) {
+      userDiv.innerHTML = pin.userHtml;
+    } else {
+      userDiv.textContent = pin.user || "";
+    }
+    userDiv.appendChild(createCopyButton(pin.user || ""));
 
     // Assistant block
     const assistantDiv = document.createElement("div");
     assistantDiv.className = "pin-block pin-assistant";
-    // assistantDiv.innerHTML = `<strong>ChatGPT:</strong><br>${pin.assistant}`;
-    assistantDiv.innerHTML = `${pin.assistant}`;
-    assistantDiv.appendChild(createCopyButton(pin.assistant));
+    if (pin.assistantHtml) {
+      assistantDiv.innerHTML = pin.assistantHtml;
+    } else {
+      assistantDiv.textContent = pin.assistant || "";
+    }
+    assistantDiv.appendChild(createCopyButton(pin.assistant || ""));
 
     pinContent.appendChild(userDiv);
     pinContent.appendChild(assistantDiv);

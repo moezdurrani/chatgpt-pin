@@ -39,7 +39,7 @@ h2 {
 
 .pin-assistant {
   background: rgb(33, 33, 33);
-  border-left: 3px solid #4cafef;
+  /* border-left: 3px solid #4cafef; */
   padding-left: 16px;
 }
 
@@ -97,4 +97,24 @@ h2 {
   white-space: nowrap;
   pointer-events: none; /* prevent blocking clicks */
   z-index: 10; /* keep above other elements */
+}
+
+
+pre {
+  background: rgb(23, 23, 23);
+  color: #f8f8f2;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: monospace;
+}
+code {
+  font-family: monospace;
+}
+.copy-btn {
+  background: transparent;
+  border: 1px solid #666;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
 }

@@ -6,21 +6,32 @@
   "action": {
     "default_popup": "popup.html"
   },
-  "permissions": ["storage"],
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
   "content_scripts": [
     {
       "matches": [
         "https://chat.openai.com/*",
         "https://chatgpt.com/*"
       ],
-      "js": ["content.js"]
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
-  {
-    "resources": ["icons/*.svg", "details.html"],
-    "matches": ["<all_urls>"]
-  }
-]
-
+    {
+      "resources": [
+        "icons/*.svg",
+        "details.html"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
 }

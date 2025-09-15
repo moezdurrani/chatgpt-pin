@@ -15,13 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const li = document.createElement("li");
         li.className = "pin-item";
 
-        // Show title
+        // --- Title ---
         const titleSpan = document.createElement("span");
         titleSpan.textContent = pin.title || "(Untitled)";
         titleSpan.className = "pin-title";
         titleSpan.title = pin.title || "(Untitled)";
 
-        // Edit button
+        // --- Edit button ---
         const editBtn = document.createElement("button");
         const editIcon = document.createElement("img");
         editIcon.src = chrome.runtime.getURL("icons/edit-light-mode.svg");
@@ -31,9 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
         editBtn.className = "edit-btn";
 
         editBtn.addEventListener("click", (event) => {
-          event.stopPropagation(); // prevent triggering detail view
+          event.stopPropagation();
 
-          // Replace span with input
           const input = document.createElement("input");
           input.type = "text";
           input.value = pin.title || "";
@@ -42,13 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
           li.replaceChild(input, titleSpan);
           input.focus();
 
-          // Save on Enter or blur
           function saveTitle() {
             const newTitle = input.value.trim() || "(Untitled)";
             pins[index].title = newTitle;
             chrome.storage.local.set({ pins });
-
-            // Restore span
             titleSpan.textContent = newTitle;
             titleSpan.title = newTitle;
             li.replaceChild(titleSpan, input);
@@ -57,13 +53,50 @@ document.addEventListener("DOMContentLoaded", () => {
           input.addEventListener("blur", saveTitle);
           input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") saveTitle();
-            if (e.key === "Escape") {
-              li.replaceChild(titleSpan, input); // cancel
-            }
+            if (e.key === "Escape") li.replaceChild(titleSpan, input);
           });
         });
 
-        // Remove button
+        // --- Anchor button ---
+        const anchorBtn = document.createElement("button");
+        const anchorIcon = document.createElement("img");
+        anchorIcon.src = chrome.runtime.getURL("icons/anchor-light-mode.svg");
+        anchorIcon.style.width = "14px";
+        anchorIcon.style.height = "14px";
+        anchorBtn.appendChild(anchorIcon);
+        anchorBtn.className = "anchor-btn";
+
+        anchorBtn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          console.log("Anchor clicked for pin:", pin);
+
+          if (!pin.conversationId) {
+            alert("No conversation ID stored for this pin.");
+            return;
+          }
+
+          chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const activeTab = tabs[0];
+            console.log("Active tab:", activeTab);
+
+            if (!activeTab || !activeTab.url.includes("https://chatgpt.com/c/")) {
+              alert("⚠️ Please open a ChatGPT conversation first.");
+              return;
+            }
+
+            console.log("➡️ Sending scrollToPin to tab:", activeTab.id);
+            chrome.tabs.sendMessage(activeTab.id, { action: "scrollToPin", pin }, () => {
+              if (chrome.runtime.lastError) {
+                console.error("Message failed:", chrome.runtime.lastError);
+              } else {
+                console.log("✅ Message sent to content.js");
+              }
+            });
+          });
+        });
+
+
+        // --- Remove button ---
         const removeBtn = document.createElement("button");
         const removeIcon = document.createElement("img");
         removeIcon.src = chrome.runtime.getURL("icons/unpin-light-mode.svg");
@@ -78,15 +111,17 @@ document.addEventListener("DOMContentLoaded", () => {
           chrome.storage.local.set({ pins });
         });
 
-        // Open details page when clicking the pin item (but not icons)
+        // --- Details page ---
         li.addEventListener("click", () => {
           chrome.tabs.create({
-            url: chrome.runtime.getURL("details.html?id=" + encodeURIComponent(pin.id))
+            url:
+              chrome.runtime.getURL("details.html?id=" + encodeURIComponent(pin.id)),
           });
         });
 
         li.appendChild(titleSpan);
         li.appendChild(editBtn);
+        li.appendChild(anchorBtn);
         li.appendChild(removeBtn);
         pinList.appendChild(li);
       });

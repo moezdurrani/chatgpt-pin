@@ -77,21 +77,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
           chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const activeTab = tabs[0];
-            console.log("Active tab:", activeTab);
+            const convUrl = `https://chatgpt.com/c/${pin.conversationId}`;
 
-            if (!activeTab || !activeTab.url.includes("https://chatgpt.com/c/")) {
-              alert("⚠️ Please open a ChatGPT conversation first.");
-              return;
+            if (activeTab && activeTab.url.includes(`/c/${pin.conversationId}`)) {
+              // ✅ Already in correct chat
+              chrome.tabs.sendMessage(activeTab.id, { action: "scrollToPin", pin });
+            } else {
+              // ❌ Wrong chat → save pin for retry
+              chrome.storage.local.set({ pendingScrollPin: pin }, () => {
+                chrome.tabs.create({ url: convUrl });
+              });
             }
-
-            console.log("➡️ Sending scrollToPin to tab:", activeTab.id);
-            chrome.tabs.sendMessage(activeTab.id, { action: "scrollToPin", pin }, () => {
-              if (chrome.runtime.lastError) {
-                console.error("Message failed:", chrome.runtime.lastError);
-              } else {
-                console.log("✅ Message sent to content.js");
-              }
-            });
           });
         });
 
@@ -114,8 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // --- Details page ---
         li.addEventListener("click", () => {
           chrome.tabs.create({
-            url:
-              chrome.runtime.getURL("details.html?id=" + encodeURIComponent(pin.id)),
+            url: chrome.runtime.getURL("details.html?id=" + encodeURIComponent(pin.id))
           });
         });
 

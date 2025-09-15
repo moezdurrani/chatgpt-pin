@@ -163,8 +163,10 @@ observer.observe(document.documentElement, {
 });
 
 // ✅ Listen for popup scroll request
+// ✅ Listen for popup scroll request
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    console.log("content.js received message:", msg);
+  console.log("content.js received message:", msg);
+
   if (msg.action === "scrollToPin" && msg.pin) {
     const { id, user, assistant, conversationId } = msg.pin;
     console.log("scrollToPin request:", msg.pin);
@@ -172,7 +174,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     // Verify current conversation
     const currentConv = getConversationId();
     if (!conversationId || conversationId !== currentConv) {
-      alert("⚠️ Wrong chat open. Please open the correct conversation.");
+      console.warn("⚠️ Wrong chat open. Expected:", conversationId, "Got:", currentConv);
       return;
     }
 
@@ -188,18 +190,73 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       return target;
     }
 
-    let target = tryFindTarget();
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
-      target.style.outline = "2px solid orange";
-      setTimeout(() => {
-        target.style.outline = "";
-      }, 3000);
-      console.log("✅ Scrolled to pinned message:", id || user);
-    } else {
-      alert("⚠️ Could not find the pinned message in this chat.");
-    }
+    let attempts = 0;
+    const maxAttempts = 40; // ~20 seconds
+    const interval = setInterval(() => {
+      attempts++;
+      const target = tryFindTarget();
+
+      if (target) {
+        clearInterval(interval);
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        target.style.outline = "2px solid orange";
+        setTimeout(() => (target.style.outline = ""), 3000);
+        console.log("✅ Scrolled to pinned message:", id || user);
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        console.warn("❌ Could not find pinned message after retries:", id || user);
+      }
+    }, 500); // retry every 0.5s
   }
 });
 
+
+
 setInterval(addPinButtons, 2000);
+
+
+// ✅ On load, check if there is a pending scroll request
+window.addEventListener("load", () => {
+  const currentConv = getConversationId();
+  if (!currentConv) return;
+
+  chrome.storage.local.get(["pendingScrollPin"], (result) => {
+    const pending = result.pendingScrollPin;
+    if (pending && pending.conversationId === currentConv) {
+      console.log("▶ Found pending scroll request:", pending);
+
+      // Try to scroll until found
+      let attempts = 0;
+      const maxAttempts = 40;
+      const interval = setInterval(() => {
+        attempts++;
+        let target = pending.id
+          ? document.querySelector(`[data-message-id="${pending.id}"]`)
+          : null;
+
+        if (!target && pending.user) {
+          target = Array.from(document.querySelectorAll("[data-message-id]")).find(
+            (el) =>
+              el.innerText.includes(pending.user.slice(0, 50)) ||
+              (pending.assistant && el.innerText.includes(pending.assistant.slice(0, 50)))
+          );
+        }
+
+        if (target) {
+          clearInterval(interval);
+          target.scrollIntoView({ behavior: "smooth", block: "center" });
+          target.style.outline = "2px solid orange";
+          setTimeout(() => (target.style.outline = ""), 3000);
+          console.log("✅ Scrolled to pinned message:", pending.id || pending.user);
+
+          // Clear pending scroll
+          chrome.storage.local.remove("pendingScrollPin");
+        } else if (attempts >= maxAttempts) {
+          clearInterval(interval);
+          console.warn("❌ Could not find pinned message after retries:", pending.id || pending.user);
+          chrome.storage.local.remove("pendingScrollPin");
+        }
+      }, 500);
+    }
+  });
+});

@@ -163,7 +163,6 @@ observer.observe(document.documentElement, {
 });
 
 // ✅ Listen for popup scroll request
-// ✅ Listen for popup scroll request
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   console.log("content.js received message:", msg);
 
@@ -190,30 +189,38 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       return target;
     }
 
+    // ✅ Fast path: try immediately once
+    let target = tryFindTarget();
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      target.style.outline = "2px solid orange";
+      setTimeout(() => (target.style.outline = ""), 3000);
+      console.log("⚡ Instant scroll to pinned message:", id || user);
+      return;
+    }
+
+    // ⏳ If not found → fall back to retries
     let attempts = 0;
     const maxAttempts = 40; // ~20 seconds
     const interval = setInterval(() => {
       attempts++;
-      const target = tryFindTarget();
+      const retryTarget = tryFindTarget();
 
-      if (target) {
+      if (retryTarget) {
         clearInterval(interval);
-        target.scrollIntoView({ behavior: "smooth", block: "center" });
-        target.style.outline = "2px solid orange";
-        setTimeout(() => (target.style.outline = ""), 3000);
-        console.log("✅ Scrolled to pinned message:", id || user);
+        retryTarget.scrollIntoView({ behavior: "smooth", block: "center" });
+        retryTarget.style.outline = "2px solid orange";
+        setTimeout(() => (retryTarget.style.outline = ""), 3000);
+        console.log("✅ Scrolled to pinned message after retry:", id || user);
       } else if (attempts >= maxAttempts) {
         clearInterval(interval);
         console.warn("❌ Could not find pinned message after retries:", id || user);
       }
-    }, 500); // retry every 0.5s
+    }, 500);
   }
 });
 
-
-
 setInterval(addPinButtons, 2000);
-
 
 // ✅ On load, check if there is a pending scroll request
 window.addEventListener("load", () => {
@@ -225,15 +232,10 @@ window.addEventListener("load", () => {
     if (pending && pending.conversationId === currentConv) {
       console.log("▶ Found pending scroll request:", pending);
 
-      // Try to scroll until found
-      let attempts = 0;
-      const maxAttempts = 40;
-      const interval = setInterval(() => {
-        attempts++;
+      function tryFindTarget() {
         let target = pending.id
           ? document.querySelector(`[data-message-id="${pending.id}"]`)
           : null;
-
         if (!target && pending.user) {
           target = Array.from(document.querySelectorAll("[data-message-id]")).find(
             (el) =>
@@ -241,15 +243,33 @@ window.addEventListener("load", () => {
               (pending.assistant && el.innerText.includes(pending.assistant.slice(0, 50)))
           );
         }
+        return target;
+      }
 
-        if (target) {
+      // ✅ Fast path for pending scroll
+      let target = tryFindTarget();
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        target.style.outline = "2px solid orange";
+        setTimeout(() => (target.style.outline = ""), 3000);
+        console.log("⚡ Instant scroll to pending pin:", pending.id || pending.user);
+        chrome.storage.local.remove("pendingScrollPin");
+        return;
+      }
+
+      // ⏳ Retry if not found
+      let attempts = 0;
+      const maxAttempts = 40;
+      const interval = setInterval(() => {
+        attempts++;
+        const retryTarget = tryFindTarget();
+
+        if (retryTarget) {
           clearInterval(interval);
-          target.scrollIntoView({ behavior: "smooth", block: "center" });
-          target.style.outline = "2px solid orange";
-          setTimeout(() => (target.style.outline = ""), 3000);
-          console.log("✅ Scrolled to pinned message:", pending.id || pending.user);
-
-          // Clear pending scroll
+          retryTarget.scrollIntoView({ behavior: "smooth", block: "center" });
+          retryTarget.style.outline = "2px solid orange";
+          setTimeout(() => (retryTarget.style.outline = ""), 3000);
+          console.log("✅ Scrolled to pending pinned message:", pending.id || pending.user);
           chrome.storage.local.remove("pendingScrollPin");
         } else if (attempts >= maxAttempts) {
           clearInterval(interval);

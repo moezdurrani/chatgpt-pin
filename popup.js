@@ -33,6 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
         editBtn.addEventListener("click", (event) => {
           event.stopPropagation();
 
+          // mark li as editing
+          li.dataset.editing = "true";
+
           const input = document.createElement("input");
           input.type = "text";
           input.value = pin.title || "";
@@ -48,12 +51,18 @@ document.addEventListener("DOMContentLoaded", () => {
             titleSpan.textContent = newTitle;
             titleSpan.title = newTitle;
             li.replaceChild(titleSpan, input);
+
+            // remove editing flag when done
+            delete li.dataset.editing;
           }
 
           input.addEventListener("blur", saveTitle);
           input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") saveTitle();
-            if (e.key === "Escape") li.replaceChild(titleSpan, input);
+            if (e.key === "Escape") {
+              li.replaceChild(titleSpan, input);
+              delete li.dataset.editing;
+            }
           });
         });
 
@@ -77,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const activeTab = tabs[0];
-            const convUrl = `https://chatgpt.com/c/${pin.conversationId}`;
+            const convUrl = `https://chat.openai.com/c/${pin.conversationId}`;
 
             if (activeTab && activeTab.url.includes(`/c/${pin.conversationId}`)) {
               // ✅ Already in correct chat
@@ -90,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           });
         });
-
 
         // --- Remove button ---
         const removeBtn = document.createElement("button");
@@ -109,6 +117,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // --- Details page ---
         li.addEventListener("click", () => {
+          // Only open details if not editing
+          if (li.dataset.editing === "true") {
+            console.log("✏️ Editing in progress, not opening details.");
+            return;
+          }
           chrome.tabs.create({
             url: chrome.runtime.getURL("details.html?id=" + encodeURIComponent(pin.id))
           });

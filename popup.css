@@ -1,13 +1,23 @@
 body {
   font-family: Arial, sans-serif;
-  padding: 10px;
-  min-width: 220px;   /* smaller default */
-  max-width: 260px;   /* keep it from stretching too wide */
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  border-radius: 12px !important; /* ensure rounded corners in popup */
+  box-sizing: border-box;
+}
+
+.popup-container {
+  padding: 12px;
+  min-width: 300px;   /* wider than before */
+  max-width: 340px;   /* fixed range */
+  box-sizing: border-box;
+  border-radius: 12px;
 }
 
 h2 {
-  font-size: 14px;
-  margin-bottom: 8px;
+  font-size: 15px;
+  margin: 0 0 10px 0;
 }
 
 #pin-list {
@@ -20,19 +30,19 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 0;
+  padding: 6px 0;
   border-bottom: 1px solid #eee;
   gap: 6px;
+  cursor: pointer;
 }
 
-.pin-user,
-.pin-assistant {
+.pin-title {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12px;
-  line-height: 1.4;
+  white-space: nowrap; /* enforce single line */
+  font-size: 13px;
+  line-height: 1.5;
   color: #333;
 }
 

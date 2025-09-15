@@ -15,17 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const li = document.createElement("li");
         li.className = "pin-item";
 
-        // User text (preview only)
-        const userSpan = document.createElement("span");
-        userSpan.textContent = pin.user;
-        userSpan.className = "pin-user";
-        userSpan.title = pin.user;
-
-        // Assistant text (preview only)
-        const assistantSpan = document.createElement("span");
-        assistantSpan.textContent = pin.assistant;
-        assistantSpan.className = "pin-assistant";
-        assistantSpan.title = pin.assistant;
+        // Show title instead of full user text
+        const titleSpan = document.createElement("span");
+        titleSpan.textContent = pin.title || "(Untitled)";
+        titleSpan.className = "pin-title";
+        titleSpan.title = pin.title || "(Untitled)";
 
         // Remove button
         const removeBtn = document.createElement("button");
@@ -40,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         removeBtn.addEventListener("click", (event) => {
           event.stopPropagation(); // ⛔ prevent li click handler
           pins.splice(index, 1);
-          chrome.storage.local.set({ pins }); // storage listener will refresh UI
+          chrome.storage.local.set({ pins });
         });
 
         // ✅ Open details page when clicking the pin item
@@ -50,8 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         });
 
-        li.appendChild(userSpan);
-        li.appendChild(assistantSpan);
+        li.appendChild(titleSpan);
         li.appendChild(removeBtn);
         pinList.appendChild(li);
       });

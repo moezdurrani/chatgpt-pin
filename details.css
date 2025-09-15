@@ -4,35 +4,37 @@ body {
   background: #f9f9f9;
 }
 
-.details-container {
+h2 {
+  margin-bottom: 15px;
+}
+
+#pin-content {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   margin-bottom: 20px;
 }
 
-.message {
-  padding: 10px;
-  border-radius: 8px;
+.pin-block {
   margin-bottom: 12px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  background: white;
 }
 
-.message.user {
-  border-left: 4px solid #007bff;
+.pin-block strong {
+  display: block;
+  margin-bottom: 5px;
 }
 
-.message.assistant {
-  border-left: 4px solid #28a745;
-}
-
-.back-btn {
-  background: #007bff;
-  color: white;
+#back-btn {
+  background: #1a73e8;
   border: none;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
+  color: white;
+  font-size: 14px;
 }
 
-.back-btn:hover {
-  background: #0056b3;
+#back-btn:hover {
+  background: #1558b0;
 }

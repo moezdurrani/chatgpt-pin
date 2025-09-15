@@ -1,53 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Pinned Message Details</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f9f9f9;
-    }
-    h2 {
-      margin-bottom: 15px;
-    }
-    .message-block {
-      padding: 12px;
-      margin-bottom: 16px;
-      border-radius: 8px;
-      background: white;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .user {
-      font-weight: bold;
-      margin-bottom: 8px;
-      color: #333;
-    }
-    .assistant {
-      font-style: italic;
-      color: #555;
-    }
-    .back-btn {
-      display: inline-block;
-      padding: 6px 12px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 14px;
-    }
-    .back-btn:hover {
-      background: #0056b3;
-    }
-  </style>
+  <title>Pinned Message</title>
+  <link rel="stylesheet" href="details.css">
 </head>
 <body>
-  <h2>Pinned Message</h2>
-  <div id="content"></div>
-  <a href="popup.html" class="back-btn">⬅ Back</a>
+  <h2 id="pin-title">Pinned Message</h2>
+  <div id="pin-content"></div>
+  <button id="back-btn">Back</button>
+
   <script src="details.js"></script>
 </body>
 </html>

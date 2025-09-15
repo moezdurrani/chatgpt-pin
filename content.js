@@ -46,7 +46,6 @@ function addPinButtons() {
         if (role !== "user") return;
 
         if (el.querySelector(".pin-button")) return;
-        el.style.outline = "1px solid red"; // debugging
 
         // Create button
         const pinBtn = document.createElement("button");
@@ -82,19 +81,27 @@ function addPinButtons() {
 
         // Handle click
         pinBtn.addEventListener("click", () => {
-            const userText = el.innerText;
-            const assistantText = getNextAssistantMessage(el); // ✅ FIXED
+            const userText = el.innerText.trim();
+            const assistantText = getNextAssistantMessage(el);
+
+            // Default title = first 60 chars of user text
+            const defaultTitle = userText.length > 60 ? userText.slice(0, 60) + "…" : userText;
 
             chrome.storage.local.get(["pins"], (result) => {
                 let pins = result.pins || [];
                 const index = pins.findIndex(p => p.id === messageId);
 
                 if (index === -1) {
-                    // Save user + assistant pair
-                    pins.push({ id: messageId, user: userText, assistant: assistantText });
+                    // Save user + assistant pair with title
+                    pins.push({
+                        id: messageId,
+                        title: defaultTitle,
+                        user: userText,
+                        assistant: assistantText
+                    });
                     chrome.storage.local.set({ pins });
                     icon.src = getIcon(true);
-                    console.log("Pinned pair:", { userText, assistantText });
+                    console.log("Pinned pair:", { userText, assistantText, title: defaultTitle });
                 } else {
                     // Remove pair
                     pins.splice(index, 1);

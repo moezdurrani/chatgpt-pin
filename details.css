@@ -30,7 +30,7 @@ h2 {
   border-radius: 10px;
   line-height: 1.7;
   font-size: 16px;
-  position: relative; /* ⬅ needed for copy button positioning */
+  position: relative;
 }
 
 .pin-user {
@@ -76,4 +76,25 @@ h2 {
 
 .copy-btn:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+
+/* Tooltip floats to the right of button */
+.tooltip {
+  position: absolute;
+  top: 50%;
+  left: 100%; /* place to the right of the button */
+  transform: translateY(-50%);
+  margin-left: 8px;
+
+  font-size: 13px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.85); /* black background with slight transparency */
+  padding: 4px 8px;
+  border-radius: 6px;
+
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+  pointer-events: none; /* prevent blocking clicks */
+  z-index: 10; /* keep above other elements */
 }

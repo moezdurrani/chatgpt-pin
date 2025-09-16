@@ -30,6 +30,18 @@ function getEditIcon() {
     );
 }
 
+function applyTitleBoxTheme(titleBox) {
+    if (!titleBox) return;
+    if (getTheme() === "dark") {
+        titleBox.style.background = "#333";
+        titleBox.style.color = "#fff";
+    } else {
+        titleBox.style.background = "#eee";
+        titleBox.style.color = "#000";
+    }
+}
+
+
 
 // Extract conversationId from URL (/c/{conversationId})
 function getConversationId() {
@@ -72,8 +84,7 @@ function addPinButtons() {
         // --- Title display (hidden unless pinned) ---
         const titleBox = document.createElement("span");
         titleBox.className = "pin-title-inline";
-        titleBox.style.background = getTheme() === "dark" ? "#333" : "#eee";
-        titleBox.style.color = getTheme() === "dark" ? "#fff" : "#000";
+        applyTitleBoxTheme(titleBox);
         titleBox.style.padding = "4px 6px";
         titleBox.style.marginRight = "6px";
         titleBox.style.borderRadius = "6px";
@@ -260,14 +271,19 @@ const observer = new MutationObserver(() => {
         });
     });
 
-    // ✅ Update all edit icons too
+    // Update all edit icons too
     document.querySelectorAll(".pin-edit-btn img").forEach((img) => {
         img.src = getEditIcon();
+    });
+
+    // Update titleBox styles
+    document.querySelectorAll(".pin-title-inline").forEach((box) => {
+        applyTitleBoxTheme(box);
     });
 });
 observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "data-theme"] });
 
-// ✅ Scroll handling (unchanged from your working code)
+// Scroll handling (unchanged from your working code)
 chrome.runtime.onMessage.addListener((msg) => {
     if (msg.action === "scrollToPin" && msg.pin) {
         const { id, user, assistant, conversationId } = msg.pin;

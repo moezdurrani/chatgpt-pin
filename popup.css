@@ -68,6 +68,7 @@ body {
 .pin-list-container {
   max-height: 350px; /* ✅ limits popup growth */
   overflow-y: auto;
+  overflow-x: hidden;
   /* background: #fafafa; */
   border-radius: 12px 12px;
   padding: 8px 6px;
@@ -169,3 +170,43 @@ body {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
+/* Tooltip base */
+.edit-btn,
+.anchor-btn,
+.remove-btn {
+  position: relative; /* required for tooltip positioning */
+}
+
+/* The tooltip itself */
+.edit-btn::after,
+.anchor-btn::after,
+.remove-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%; /* show above the icon */
+  left: 50%;
+  transform: translateX(-50%);
+  
+  background: rgba(30, 30, 30, 0.75); /* dark background */
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 20;
+}
+
+/* Show tooltip on hover */
+.edit-btn:hover::after,
+.anchor-btn:hover::after,
+.remove-btn:hover::after {
+  opacity: 1;
+  left: auto;
+  right: 0;
+  transform: none;
+}
+

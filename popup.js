@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
         editIcon.style.height = "17px";
         editBtn.appendChild(editIcon);
         editBtn.className = "edit-btn";
+        editBtn.setAttribute("data-tooltip", "Edit");
 
         editBtn.addEventListener("click", (event) => {
           event.stopPropagation();
@@ -74,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         anchorIcon.style.height = "17px";
         anchorBtn.appendChild(anchorIcon);
         anchorBtn.className = "anchor-btn";
+        anchorBtn.setAttribute("data-tooltip", "Jump to the message");
 
         anchorBtn.addEventListener("click", (event) => {
           event.stopPropagation();
@@ -108,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
         removeIcon.style.height = "17px";
         removeBtn.appendChild(removeIcon);
         removeBtn.className = "remove-btn";
+        removeBtn.setAttribute("data-tooltip", "Unpin");
 
         removeBtn.addEventListener("click", (event) => {
           event.stopPropagation();

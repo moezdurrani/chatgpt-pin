@@ -51,69 +51,95 @@ function addPinButtons() {
     const role = el.getAttribute("data-message-author-role");
     if (role !== "user") return;
 
-    if (el.querySelector(".pin-button")) return;
+    if (el.querySelector(".pin-controls")) return; // already added
 
-    // Create button
+    // --- Container for controls ---
+    const controls = document.createElement("div");
+    controls.className = "pin-controls";
+    controls.style.display = "flex";
+    controls.style.alignItems = "center";
+    controls.style.gap = "6px";
+    controls.style.marginBottom = "5px";
+
+    // --- Title display ---
+    const titleBox = document.createElement("span");
+    titleBox.className = "pin-title-inline";
+    titleBox.style.background = getTheme() === "dark" ? "#333" : "#eee";
+    titleBox.style.color = getTheme() === "dark" ? "#fff" : "#000";
+    titleBox.style.padding = "2px 6px";
+    titleBox.style.borderRadius = "6px";
+    titleBox.style.fontSize = "12px";
+    titleBox.style.maxWidth = "150px";
+    titleBox.style.overflow = "hidden";
+    titleBox.style.textOverflow = "ellipsis";
+    titleBox.style.whiteSpace = "nowrap";
+
+    // --- Edit button ---
+    const editBtn = document.createElement("button");
+    editBtn.className = "pin-edit-btn";
+    editBtn.style.cursor = "pointer";
+    editBtn.style.border = "none";
+    editBtn.style.background = "transparent";
+    const editIcon = document.createElement("img");
+    editIcon.src = chrome.runtime.getURL("icons/edit-dark-mode.svg");
+    editIcon.style.width = "18px";
+    editIcon.style.height = "18px";
+    editBtn.appendChild(editIcon);
+
+    // --- Pin/unpin button ---
     const pinBtn = document.createElement("button");
     pinBtn.className = "pin-button";
     pinBtn.style.cursor = "pointer";
     pinBtn.style.border = "none";
     pinBtn.style.background = "transparent";
-    pinBtn.style.marginBottom = "5px";
-    pinBtn.style.padding = "6px";
-    pinBtn.style.borderRadius = "10px";
-
     const icon = document.createElement("img");
     icon.style.width = "22px";
     icon.style.height = "22px";
     icon.style.display = "block";
-    icon.style.cursor = "pointer";
     pinBtn.appendChild(icon);
 
-    // Hover background like ChatGPT
-    pinBtn.addEventListener("mouseenter", () => {
-      pinBtn.style.background =
-        getTheme() === "dark" ? "rgb(48, 48, 48)" : "rgb(232, 232, 232)";
-    });
-    pinBtn.addEventListener("mouseleave", () => {
-      pinBtn.style.background = "transparent";
-    });
+    controls.appendChild(titleBox);
+    controls.appendChild(editBtn);
+    controls.appendChild(pinBtn);
 
-    // Initialize state
+    // --- Attach controls above the message ---
+    el.insertBefore(controls, el.firstChild);
+
+    // Load pin state
     chrome.storage.local.get(["pins"], (result) => {
       const pins = result.pins || [];
-      const isPinned = pins.some((p) => p.id === messageId);
-      icon.src = getIcon(isPinned);
+      const pinData = pins.find((p) => p.id === messageId);
+      if (pinData) {
+        icon.src = getIcon(true);
+        titleBox.textContent = pinData.title || "(Untitled)";
+      } else {
+        icon.src = getIcon(false);
+        titleBox.textContent = ""; // hidden until pinned
+      }
     });
 
-    // Handle click
+    // --- Pin/unpin logic ---
     pinBtn.addEventListener("click", () => {
-      // ✅ Clone message to strip extension UI
+      // Clone user message (strip extension UI)
       const clonedUserEl = el.cloneNode(true);
-      const pinButton = clonedUserEl.querySelector(".pin-button");
-      if (pinButton) pinButton.remove();
-
+      clonedUserEl.querySelectorAll(".pin-controls").forEach((c) => c.remove());
       const userText = clonedUserEl.innerText.trim();
       const userHtml = clonedUserEl.innerHTML;
 
-      // ✅ Get assistant message
+      // Get assistant
       const assistantEl = getNextAssistantMessageEl(el);
       let assistantText = "";
       let assistantHtml = "";
       if (assistantEl) {
         const clonedAssistantEl = assistantEl.cloneNode(true);
-        clonedAssistantEl.querySelectorAll(".pin-button, .copy-btn, button").forEach((btn) =>
+        clonedAssistantEl.querySelectorAll(".pin-controls, .copy-btn, button").forEach((btn) =>
           btn.remove()
         );
         assistantText = clonedAssistantEl.innerText.trim();
         assistantHtml = clonedAssistantEl.innerHTML;
       }
 
-      // Default title = first 60 chars of user text
-      const defaultTitle =
-        userText.length > 60 ? userText.slice(0, 60) + "…" : userText;
-
-      // ✅ Get conversationId
+      const defaultTitle = userText.length > 60 ? userText.slice(0, 60) + "…" : userText;
       const conversationId = getConversationId();
 
       chrome.storage.local.get(["pins"], (result) => {
@@ -121,7 +147,6 @@ function addPinButtons() {
         const index = pins.findIndex((p) => p.id === messageId);
 
         if (index === -1) {
-          // Save user + assistant pair with both text and HTML
           pins.push({
             id: messageId,
             conversationId,
@@ -133,130 +158,78 @@ function addPinButtons() {
           });
           chrome.storage.local.set({ pins });
           icon.src = getIcon(true);
-          console.log("📌 Pinned:", { userText, assistantText, conversationId });
+          titleBox.textContent = defaultTitle;
         } else {
-          // Remove pin
           pins.splice(index, 1);
           chrome.storage.local.set({ pins });
           icon.src = getIcon(false);
-          console.log("❌ Unpinned:", { messageId });
+          titleBox.textContent = "";
         }
       });
     });
 
-    // Place above the user’s message
-    el.insertBefore(pinBtn, el.firstChild);
+    // --- Inline edit title ---
+    editBtn.addEventListener("click", () => {
+      chrome.storage.local.get(["pins"], (result) => {
+        let pins = result.pins || [];
+        const pinData = pins.find((p) => p.id === messageId);
+        if (!pinData) return; // only allow editing if pinned
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = pinData.title || "";
+        input.style.fontSize = "12px";
+        input.style.background = getTheme() === "dark" ? "#333" : "#eee";
+        input.style.color = getTheme() === "dark" ? "#fff" : "#000";
+        input.style.padding = "2px 4px";
+        input.style.borderRadius = "4px";
+        input.style.border = "1px solid #ccc";
+        input.style.maxWidth = "150px";
+
+        controls.replaceChild(input, titleBox);
+        input.focus();
+
+        function saveTitle() {
+          const newTitle = input.value.trim() || "(Untitled)";
+          pinData.title = newTitle;
+          chrome.storage.local.set({ pins });
+          titleBox.textContent = newTitle;
+          controls.replaceChild(titleBox, input);
+        }
+
+        input.addEventListener("blur", saveTitle);
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") saveTitle();
+          if (e.key === "Escape") controls.replaceChild(titleBox, input);
+        });
+      });
+    });
   });
 }
 
-// React to storage changes
+// React to storage changes (sync inline UI)
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && changes.pins) {
-    const newPins = changes.pins.newValue || [];
+    const pins = changes.pins.newValue || [];
     document.querySelectorAll("[data-message-id]").forEach((el) => {
-      const btn = el.querySelector(".pin-button img");
-      if (!btn) return;
+      const controls = el.querySelector(".pin-controls");
+      if (!controls) return;
+
       const messageId = el.getAttribute("data-message-id");
-      const isPinned = newPins.some((p) => p.id === messageId);
-      btn.src = getIcon(isPinned);
-    });
-  }
-});
+      const pinData = pins.find((p) => p.id === messageId);
+      const icon = controls.querySelector(".pin-button img");
+      const titleBox = controls.querySelector(".pin-title-inline");
 
-// React to theme changes
-const observer = new MutationObserver(() => {
-  document.querySelectorAll(".pin-button img").forEach((img) => {
-    const parent = img.closest("[data-message-id]");
-    if (!parent) return;
-    const messageId = parent.getAttribute("data-message-id");
-    chrome.storage.local.get(["pins"], (result) => {
-      const pins = result.pins || [];
-      const isPinned = pins.some((p) => p.id === messageId);
-      img.src = getIcon(isPinned);
-    });
-  });
-});
-
-observer.observe(document.documentElement, {
-  attributes: true,
-  attributeFilter: ["class", "data-theme"],
-});
-
-// ✅ Listen for popup scroll request
-chrome.runtime.onMessage.addListener((msg) => {
-  if (msg.action === "scrollToPin" && msg.pin) {
-    const { id, user, assistant, conversationId } = msg.pin;
-
-    // Verify current conversation
-    const currentConv = getConversationId();
-    if (!conversationId || conversationId !== currentConv) {
-      console.warn("⚠️ Wrong chat open. Expected:", conversationId, "Got:", currentConv);
-      return;
-    }
-
-    function tryFindTarget() {
-      let target = id ? document.querySelector(`[data-message-id="${id}"]`) : null;
-      if (!target && user) {
-        target = Array.from(document.querySelectorAll("[data-message-id]")).find(
-          (el) =>
-            el.innerText.includes(user.slice(0, 50)) ||
-            (assistant && el.innerText.includes(assistant.slice(0, 50)))
-        );
+      if (pinData) {
+        icon.src = getIcon(true);
+        titleBox.textContent = pinData.title || "(Untitled)";
+      } else {
+        icon.src = getIcon(false);
+        titleBox.textContent = "";
       }
-      return target;
-    }
-
-    let target = tryFindTarget();
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
-      target.style.transition = "box-shadow 0.3s ease";
-      target.style.borderRadius = "8px";
-      target.style.boxShadow = "0 0 0 3px orange";
-      setTimeout(() => (target.style.boxShadow = ""), 3000);
-      console.log("✅ Scrolled to pinned message:", id || user);
-    } else {
-      console.warn("❌ Could not find pinned message:", id || user);
-    }
+    });
   }
 });
 
 // Keep adding pin buttons dynamically
 setInterval(addPinButtons, 2000);
-
-// ✅ On load, check if there is a pending scroll request
-window.addEventListener("load", () => {
-  const currentConv = getConversationId();
-  if (!currentConv) return;
-
-  chrome.storage.local.get(["pendingScrollPin"], (result) => {
-    const pending = result.pendingScrollPin;
-    if (pending && pending.conversationId === currentConv) {
-      console.log("▶ Found pending scroll request:", pending);
-
-      function tryFindTarget() {
-        let target = pending.id
-          ? document.querySelector(`[data-message-id="${pending.id}"]`)
-          : null;
-        if (!target && pending.user) {
-          target = Array.from(document.querySelectorAll("[data-message-id]")).find(
-            (el) =>
-              el.innerText.includes(pending.user.slice(0, 50)) ||
-              (pending.assistant && el.innerText.includes(pending.assistant.slice(0, 50)))
-          );
-        }
-        return target;
-      }
-
-      let target = tryFindTarget();
-      if (target) {
-        target.scrollIntoView({ behavior: "smooth", block: "center" });
-        target.style.transition = "box-shadow 0.3s ease";
-        target.style.borderRadius = "8px";
-        target.style.boxShadow = "0 0 0 3px orange";
-        setTimeout(() => (target.style.boxShadow = ""), 3000);
-        console.log("✅ Scrolled to pending pinned message:", pending.id || pending.user);
-        chrome.storage.local.remove("pendingScrollPin");
-      }
-    }
-  });
-});

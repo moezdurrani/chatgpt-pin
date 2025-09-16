@@ -24,9 +24,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // --- Edit button ---
         const editBtn = document.createElement("button");
         const editIcon = document.createElement("img");
-        editIcon.src = chrome.runtime.getURL("icons/edit-light-mode.svg");
-        editIcon.style.width = "14px";
-        editIcon.style.height = "14px";
+        editIcon.src = chrome.runtime.getURL("icons/edit-dark-mode.svg");
+        editIcon.style.width = "17px";
+        editIcon.style.height = "17px";
         editBtn.appendChild(editIcon);
         editBtn.className = "edit-btn";
 
@@ -69,9 +69,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // --- Anchor button ---
         const anchorBtn = document.createElement("button");
         const anchorIcon = document.createElement("img");
-        anchorIcon.src = chrome.runtime.getURL("icons/anchor-light-mode.svg");
-        anchorIcon.style.width = "14px";
-        anchorIcon.style.height = "14px";
+        anchorIcon.src = chrome.runtime.getURL("icons/anchor-dark-mode.svg");
+        anchorIcon.style.width = "17px";
+        anchorIcon.style.height = "17px";
         anchorBtn.appendChild(anchorIcon);
         anchorBtn.className = "anchor-btn";
 
@@ -103,9 +103,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // --- Remove button ---
         const removeBtn = document.createElement("button");
         const removeIcon = document.createElement("img");
-        removeIcon.src = chrome.runtime.getURL("icons/unpin-light-mode.svg");
-        removeIcon.style.width = "14px";
-        removeIcon.style.height = "14px";
+        removeIcon.src = chrome.runtime.getURL("icons/unpin-dark-mode.svg");
+        removeIcon.style.width = "17px";
+        removeIcon.style.height = "17px";
         removeBtn.appendChild(removeIcon);
         removeBtn.className = "remove-btn";
 

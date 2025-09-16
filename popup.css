@@ -1,25 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400..800&display=swap');
+
+
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   background: transparent !important;
-  border-radius: 12px !important; /* ensure rounded corners in popup */
+  border-radius: 12px !important;
   box-sizing: border-box;
+  font-family: "Baloo Bhaijaan 2", Arial, sans-serif;
+  font-optical-sizing: auto;
 }
 
 .popup-container {
-  padding: 12px;
-  min-width: 300px;   /* wider than before */
-  max-width: 340px;   /* fixed range */
-  box-sizing: border-box;
-  border-radius: 12px;
+  padding: 0;
+  min-width: 300px;
+  max-width: 340px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  background: url("icons/bg01.jpeg") no-repeat center center;
+  background-size: cover;
+  color: white;
 }
 
-h2 {
+/* --- Header --- */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 2px;
+  padding: 10px 12px;
+  border-radius: 12px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 5px 5px;
+
+  background: rgba(255, 255, 255, 0.01);
+  backdrop-filter: blur(52px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid rgba(163, 163, 163, 0.4);
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.logo {
+  width: 20px;
+  height: 20px;
+}
+
+.header h2 {
   font-size: 15px;
-  margin: 0 0 10px 0;
+  margin: 0;
+  font-weight: 400;
 }
 
+/* --- Pin list container (scrollable) --- */
+.pin-list-container {
+  max-height: 350px; /* ✅ limits popup growth */
+  overflow-y: auto;
+  /* background: #fafafa; */
+  border-radius: 12px 12px;
+  padding: 8px 6px;
+  font-weight: 450;
+  margin: 5px 5px;
+
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid rgba(163, 163, 163, 0.4);
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* --- Pin list --- */
 #pin-list {
   list-style: none;
   padding: 0;
@@ -30,57 +87,82 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px solid #eee;
   gap: 6px;
   cursor: pointer;
+  padding: 8px 2px;
+  margin-bottom: 4px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  
 }
 
-.pin-title {
+.pin-list-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+}
+
+.pin-item:last-child {
+  border-bottom: none;
+}
+
+/* .pin-title {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap; /* enforce single line */
-  font-size: 13px;
+  white-space: nowrap;
+  font-size: 15px;
   line-height: 1.5;
-  color: #333;
+  color: white;
+} */
+
+.pin-title {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.5;
+  color: white;
+
+  white-space: nowrap;
+  overflow-x: auto;   /* adds scroll */
+  overflow-y: hidden;
 }
 
-.remove-btn {
+/* hides ugly scrollbar in WebKit (Chrome/Edge/Safari) */
+.pin-title::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* Buttons */
+.remove-btn, .edit-btn, .anchor-btn {
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
 }
 
-.remove-btn img {
+.remove-btn img,
+.edit-btn img,
+.anchor-btn img {
   width: 14px;
   height: 14px;
-  opacity: 0.7;
+  opacity: 1;
   transition: opacity 0.2s ease;
 }
 
-.remove-btn img:hover {
-  opacity: 1;
-}
-
-.edit-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  margin-right: 4px;
-}
-
-.edit-btn img {
-  width: 14px;
-  height: 14px;
+.remove-btn img:hover,
+.edit-btn img:hover,
+.anchor-btn img:hover {
   opacity: 0.7;
-  transition: opacity 0.2s ease;
-}
-
-.edit-btn img:hover {
-  opacity: 1;
 }
 
 .pin-title-input {
@@ -89,19 +171,4 @@ h2 {
   padding: 2px 4px;
   border: 1px solid #ccc;
   border-radius: 4px;
-}
-
-.anchor-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.anchor-btn img {
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-}
-
-.anchor-btn img:hover {
-  opacity: 1;
 }

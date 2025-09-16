@@ -111,10 +111,3 @@ pre {
 code {
   font-family: monospace;
 }
-.copy-btn {
-  background: transparent;
-  border: 1px solid #666;
-  border-radius: 4px;
-  padding: 4px 8px;
-  cursor: pointer;
-}

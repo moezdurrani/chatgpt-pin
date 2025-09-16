@@ -66,10 +66,11 @@ function addPinButtons() {
     titleBox.className = "pin-title-inline";
     titleBox.style.background = getTheme() === "dark" ? "#333" : "#eee";
     titleBox.style.color = getTheme() === "dark" ? "#fff" : "#000";
-    titleBox.style.padding = "2px 6px";
+    titleBox.style.padding = "5px 8px";
+    titleBox.style.marginRight = "6px";
     titleBox.style.borderRadius = "6px";
     titleBox.style.fontSize = "12px";
-    titleBox.style.maxWidth = "150px";
+    titleBox.style.maxWidth = "250px";
     titleBox.style.overflow = "hidden";
     titleBox.style.textOverflow = "ellipsis";
     titleBox.style.whiteSpace = "nowrap";
@@ -82,8 +83,8 @@ function addPinButtons() {
     editBtn.style.background = "transparent";
     const editIcon = document.createElement("img");
     editIcon.src = chrome.runtime.getURL("icons/edit-dark-mode.svg");
-    editIcon.style.width = "18px";
-    editIcon.style.height = "18px";
+    editIcon.style.width = "22px";
+    editIcon.style.height = "22px";
     editBtn.appendChild(editIcon);
 
     // --- Pin/unpin button ---

@@ -82,7 +82,30 @@ body {
 
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  clip-path: inset(0 round 12px);
 }
+
+/* Custom scrollbar for pin-list-container */
+.pin-list-container::-webkit-scrollbar {
+  width: 8px;               /* slim scrollbar */
+}
+
+.pin-list-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);  /* transparent glass track */
+  border-radius: 10px;
+}
+
+.pin-list-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);   /* semi-transparent thumb */
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0);     /* adds spacing around thumb */
+}
+
+.pin-list-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);   /* brighter on hover */
+}
+
 
 /* --- Pin list --- */
 #pin-list {

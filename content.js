@@ -1,5 +1,19 @@
 console.log("ChatGPT Pin Extension content script loaded!");
 
+// Inject custom CSS for scrollbars
+const style = document.createElement("style");
+style.textContent = `
+  .pin-title-inline::-webkit-scrollbar {
+    display: none; /* hide scrollbar in Chrome/Edge/Safari */
+  }
+  .pin-title-inline {
+    -ms-overflow-style: none;  /* hide scrollbar in IE/Edge */
+    scrollbar-width: none;     /* hide scrollbar in Firefox */
+  }
+`;
+document.head.appendChild(style);
+
+
 // Detect theme
 function getTheme() {
     if (document.documentElement.classList.contains("dark")) {
@@ -40,6 +54,20 @@ function applyTitleBoxTheme(titleBox) {
         titleBox.style.color = "#000";
     }
 }
+
+function applyInputTheme(input) {
+    if (!input) return;
+    if (getTheme() === "dark") {
+        input.style.background = "#333";
+        input.style.color = "#fff";
+        input.style.border = "1px solid #666"; // darker border for dark mode
+    } else {
+        input.style.background = "#eee";
+        input.style.color = "#000";
+        input.style.border = "1px solid #ccc"; // lighter border for light mode
+    }
+}
+
 
 
 
@@ -91,9 +119,13 @@ function addPinButtons() {
         titleBox.style.fontSize = "15px";
         titleBox.style.maxWidth = "250px";
         titleBox.style.overflow = "hidden";
-        titleBox.style.textOverflow = "ellipsis";
+        // titleBox.style.textOverflow = "ellipsis";
+        // titleBox.style.whiteSpace = "nowrap";
+        // titleBox.style.display = "none";
         titleBox.style.whiteSpace = "nowrap";
-        titleBox.style.display = "none";
+        titleBox.style.overflowX = "auto";   // ✅ allow scroll
+        titleBox.style.overflowY = "hidden";
+        titleBox.style.textOverflow = "clip"; // disable ellipsis
 
         // --- Edit button (hidden unless pinned) ---
         const editBtn = document.createElement("button");
@@ -201,13 +233,11 @@ function addPinButtons() {
                 input.type = "text";
                 input.value = pinData.title || "";
                 input.style.fontSize = "15px";
-                input.style.background = getTheme() === "dark" ? "#333" : "#eee";
-                input.style.color = getTheme() === "dark" ? "#fff" : "#000";
                 input.style.padding = "2px 4px";
                 input.style.borderRadius = "4px";
-                input.style.border = "1px solid #ccc";
-                input.style.minWidth = "150px"; 
-                input.style.maxWidth = "250px";
+                input.style.minWidth = "250px"; 
+                input.style.maxWidth = "300px";
+                applyInputTheme(input);
 
                 controls.replaceChild(input, titleBox);
                 input.focus();

@@ -111,3 +111,19 @@ pre {
 code {
   font-family: monospace;
 }
+
+#pin-title {
+  white-space: nowrap;     /* keep on one line */
+  overflow-x: auto;        /* allow horizontal scrolling */
+  overflow-y: hidden;
+  max-width: 100%;         /* don’t overflow container */
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  padding-bottom: 4px;
+}
+
+/* Hide scrollbar for Chrome/Edge/Safari */
+#pin-title::-webkit-scrollbar {
+  display: none;
+}

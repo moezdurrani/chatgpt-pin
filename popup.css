@@ -168,7 +168,17 @@ body {
   font-size: 13px;
   padding: 2px 4px;
   border: 1px solid #ccc;
+  color: white;
+  background: none;
   border-radius: 4px;
+  outline: none;
+}
+
+.pin-title-input:focus {
+  border: 1px solid #00b612;   /* change border color when active */
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4); /* subtle white glow */
+  background: rgba(255,255,255,0.1); /* optional frosted background */
+  color: white;
 }
 
 /* Tooltip base */
@@ -176,6 +186,16 @@ body {
 .anchor-btn,
 .remove-btn {
   position: relative; /* required for tooltip positioning */
+
+  padding: 4px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.15);
+}
+
+.edit-btn:hover,
+.anchor-btn:hover,
+.remove-btn:hover {
+  background: rgba(255,255,255,0.1);
 }
 
 /* The tooltip itself */

@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
         editIcon.style.height = "17px";
         editBtn.appendChild(editIcon);
         editBtn.className = "edit-btn";
-        editBtn.setAttribute("data-tooltip", "Edit");
+        editBtn.setAttribute("data-tooltip", "Edit Pin");
 
         editBtn.addEventListener("click", (event) => {
           event.stopPropagation();
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         anchorIcon.style.height = "17px";
         anchorBtn.appendChild(anchorIcon);
         anchorBtn.className = "anchor-btn";
-        anchorBtn.setAttribute("data-tooltip", "Jump to the message");
+        anchorBtn.setAttribute("data-tooltip", "Take me to the message in chat");
 
         anchorBtn.addEventListener("click", (event) => {
           event.stopPropagation();

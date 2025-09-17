@@ -290,12 +290,13 @@ body.theme-dark .pin-list-container {
 
 /* === Light Theme === */
 body.theme-light .popup-container {
-  background: #fdfdfd;
+  background: rgba(255, 255, 255, 0.95);
   color: black;
 }
+
 body.theme-light .header,
 body.theme-light .pin-list-container {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgb(247, 243, 246);
   backdrop-filter: blur(12px) saturate(150%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   border: 1px solid rgba(0, 0, 0, 0.15);
@@ -331,10 +332,27 @@ body.theme-light .pin-list-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
 .theme-toggle-btn:hover {
   background: rgba(255, 255, 255, 0.15);
+}
+
+/* Border colors per theme */
+body.theme-light .theme-toggle-btn {
+  border: 1px solid rgba(0,0,0,0.3);      /* gray border */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* lighter shadow */
+}
+
+body.theme-dark .theme-toggle-btn {
+  border: 1px solid rgba(255,255,255,0.4); /* white border */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6);   /* stronger shadow */
+}
+
+body.theme-green .theme-toggle-btn {
+  border: 1px solid rgba(0, 255, 128, 0.7); /* green accent */
+  box-shadow: 0 2px 6px rgba(0,255,128,0.3);
 }
 
 .theme-toggle-btn img {
@@ -357,3 +375,26 @@ body.theme-dark .pin-item {
 body.theme-green .pin-item {
   border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
+
+/* Light theme buttons */
+body.theme-light .edit-btn,
+body.theme-light .anchor-btn,
+body.theme-light .remove-btn {
+  background: rgba(0, 0, 0, 0.08);  /* subtle gray bg */
+}
+
+body.theme-light .edit-btn:hover,
+body.theme-light .anchor-btn:hover,
+body.theme-light .remove-btn:hover {
+  background: rgba(0, 0, 0, 0.15);  /* darker on hover */
+}
+
+/* Light theme: brighten icons */
+body.theme-light .edit-btn img,
+body.theme-light .anchor-btn img,
+body.theme-light .remove-btn img {
+  filter: brightness(1.5) contrast(0.8); /* makes them lighter */
+}
+
+
+

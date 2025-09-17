@@ -193,38 +193,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-
-
-function getIconPath(baseName) {
-  let theme = "light-mode"; // default fallback
-
-  if (document.body.classList.contains("theme-dark")) {
-    theme = "dark-mode";
-  } else if (document.body.classList.contains("theme-green")) {
-    // no green icons exist, reuse dark
-    theme = "dark-mode";
-  }
-
-  return chrome.runtime.getURL(`icons/${baseName}-${theme}.svg`);
-}
-
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-
-
-
-
-
-  toggleBtn.addEventListener("click", () => {
-    const currentTheme = themes.find((t) => body.classList.contains(t)) || "theme-light";
-    let nextIndex = (themes.indexOf(currentTheme) + 1) % themes.length;
-    const nextTheme = themes[nextIndex];
-
-    body.className = nextTheme;
-    toggleIcon.src = chrome.runtime.getURL(icons[nextTheme]);
-
-    chrome.storage.local.set({ popupTheme: nextTheme });
-  });
-});

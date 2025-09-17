@@ -263,7 +263,10 @@ function addPinButtons() {
                     pinData.title = newTitle;
                     chrome.storage.local.set({ pins });
                     titleBox.textContent = newTitle;
-                    controls.replaceChild(titleBox, input);
+
+                    if (controls.contains(input)) {
+                        controls.replaceChild(titleBox, input);
+                    }
                 }
 
                 input.addEventListener("blur", saveTitle);

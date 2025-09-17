@@ -194,7 +194,6 @@ body {
   font-size: 13px;
   padding: 2px 4px;
   border: 1px solid #ccc;
-  color: white;
   background: none;
   border-radius: 4px;
   outline: none;
@@ -396,5 +395,14 @@ body.theme-light .remove-btn img {
   filter: brightness(1.5) contrast(0.8); /* makes them lighter */
 }
 
+body.theme-green .pin-title-input {
+  color: white;
+}
+body.theme-dark .pin-title-input {
+  color: white;
+}
+body.theme-light .pin-title-input {
+  color: black;
+}
 
 

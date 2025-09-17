@@ -66,6 +66,11 @@ h2 {
   border: none;
   cursor: pointer;
   padding: 4px;
+  border-radius: 0;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
 .copy-btn img {

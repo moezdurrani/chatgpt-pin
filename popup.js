@@ -76,7 +76,10 @@ document.addEventListener("DOMContentLoaded", () => {
             chrome.storage.local.set({ pins });
             titleSpan.textContent = newTitle;
             titleSpan.title = newTitle;
-            li.replaceChild(titleSpan, input);
+
+            if (li.contains(input)) {
+              li.replaceChild(titleSpan, input);
+            }
 
             // remove editing flag when done
             delete li.dataset.editing;

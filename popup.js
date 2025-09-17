@@ -1,5 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const body = document.body;
   const pinList = document.getElementById("pin-list");
+  const toggleBtn = document.getElementById("theme-toggle");
+  const toggleIcon = document.getElementById("theme-toggle-icon");
+
+  // themes order: light → dark → green
+  const themes = ["theme-light", "theme-dark", "theme-green"];
+  const icons = {
+    "theme-light": "icons/moon.svg",       // show moon to go to dark
+    "theme-dark": "icons/leaf-dark-mode.svg", // show leaf to go to green
+    "theme-green": "icons/sun-light-mode.svg" // show sun to go to light
+  };
+
+  // --- Get correct icon path based on theme ---
+  function getIconPath(baseName) {
+    let theme = "light-mode"; // default fallback
+
+    if (body.classList.contains("theme-dark")) {
+      theme = "dark-mode";
+    } else if (body.classList.contains("theme-green")) {
+      // no green icons exist → reuse dark
+      theme = "dark-mode";
+    }
+
+    return chrome.runtime.getURL(`icons/${baseName}-${theme}.svg`);
+  }
 
   function loadPins() {
     chrome.storage.local.get(["pins"], (result) => {
@@ -24,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // --- Edit button ---
         const editBtn = document.createElement("button");
         const editIcon = document.createElement("img");
-        editIcon.src = chrome.runtime.getURL("icons/edit-dark-mode.svg");
+        editIcon.src = getIconPath("edit");
         editIcon.style.width = "17px";
         editIcon.style.height = "17px";
         editBtn.appendChild(editIcon);
@@ -70,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // --- Anchor button ---
         const anchorBtn = document.createElement("button");
         const anchorIcon = document.createElement("img");
-        anchorIcon.src = chrome.runtime.getURL("icons/anchor-dark-mode.svg");
+        anchorIcon.src = getIconPath("anchor");
         anchorIcon.style.width = "17px";
         anchorIcon.style.height = "17px";
         anchorBtn.appendChild(anchorIcon);
@@ -105,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // --- Remove button ---
         const removeBtn = document.createElement("button");
         const removeIcon = document.createElement("img");
-        removeIcon.src = chrome.runtime.getURL("icons/unpin-dark-mode.svg");
+        removeIcon.src = getIconPath("unpin");
         removeIcon.style.width = "17px";
         removeIcon.style.height = "17px";
         removeBtn.appendChild(removeIcon);
@@ -139,11 +164,67 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  loadPins();
+  // --- Theme setup ---
+  chrome.storage.local.get("popupTheme", (result) => {
+    const savedTheme = result.popupTheme || "theme-light";
+    body.className = savedTheme;
+    toggleIcon.src = chrome.runtime.getURL(icons[savedTheme]);
+
+    // ✅ only load pins after theme is applied
+    loadPins();
+  });
+
+  toggleBtn.addEventListener("click", () => {
+    const currentTheme = themes.find((t) => body.classList.contains(t)) || "theme-light";
+    const nextTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
+
+    body.className = nextTheme;
+    toggleIcon.src = chrome.runtime.getURL(icons[nextTheme]);
+
+    chrome.storage.local.set({ popupTheme: nextTheme });
+
+    // ✅ reload pins so icons update
+    loadPins();
+  });
 
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "local" && changes.pins) {
       loadPins();
     }
+  });
+});
+
+
+function getIconPath(baseName) {
+  let theme = "light-mode"; // default fallback
+
+  if (document.body.classList.contains("theme-dark")) {
+    theme = "dark-mode";
+  } else if (document.body.classList.contains("theme-green")) {
+    // no green icons exist, reuse dark
+    theme = "dark-mode";
+  }
+
+  return chrome.runtime.getURL(`icons/${baseName}-${theme}.svg`);
+}
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+
+
+
+
+  toggleBtn.addEventListener("click", () => {
+    const currentTheme = themes.find((t) => body.classList.contains(t)) || "theme-light";
+    let nextIndex = (themes.indexOf(currentTheme) + 1) % themes.length;
+    const nextTheme = themes[nextIndex];
+
+    body.className = nextTheme;
+    toggleIcon.src = chrome.runtime.getURL(icons[nextTheme]);
+
+    chrome.storage.local.set({ popupTheme: nextTheme });
   });
 });

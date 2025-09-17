@@ -47,8 +47,8 @@ body {
 }
 
 .header a {
-  display: flex;           /* ✅ makes <a> behave like a flex child */
-  align-items: center;     /* ✅ centers the logo vertically */
+  display: flex;  
+  align-items: center;     
   justify-content: center; 
 }
 
@@ -59,9 +59,13 @@ body {
 
 
 .header h2 {
-  font-size: 15px;
+  font-size: 17px;
   margin: 0;
-  font-weight: 400;
+  font-weight: 600;
+
+  line-height: 1;        /* remove extra line spacing */
+  display: flex;         /* makes it align like the others */
+  align-items: center; 
 }
 
 /* --- Pin list container (scrollable) --- */
@@ -150,7 +154,6 @@ body {
   flex: 1;
   font-size: 15px;
   line-height: 1.5;
-  color: white;
 
   white-space: nowrap;
   overflow-x: auto;   /* adds scroll */
@@ -253,3 +256,104 @@ body {
   transform: none;
 }
 
+
+
+
+
+/* Base popup styles apply by default */
+/* === Green Theme (Default) === */
+body.theme-green .popup-container {
+  background: url("icons/bg17.jpeg") no-repeat center center;
+  background-size: cover;
+  color: white;
+}
+body.theme-green .header,
+body.theme-green .pin-list-container {
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid rgba(163, 163, 163, 0.4);
+  color: white;
+}
+
+/* === Dark Theme === */
+body.theme-dark .popup-container {
+  background: #121212;
+  color: white;
+}
+body.theme-dark .header,
+body.theme-dark .pin-list-container {
+  background: rgba(30, 30, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* === Light Theme === */
+body.theme-light .popup-container {
+  background: #fdfdfd;
+  color: black;
+}
+body.theme-light .header,
+body.theme-light .pin-list-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: black;
+}
+
+/* === Toggle bar styling === */
+.theme-toggle {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  justify-content: center;
+}
+.theme-toggle button {
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.15);
+}
+.theme-toggle button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.theme-toggle-btn {
+  margin-left: auto; /* pushes to right */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.theme-toggle-btn img {
+  width: 18px;
+  height: 18px;
+}
+
+
+/* Default (light mode) */
+body.theme-light .pin-item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15); /* subtle gray line */
+}
+
+/* Dark mode */
+body.theme-dark .pin-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Green theme (your custom one) */
+body.theme-green .pin-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}

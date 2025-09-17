@@ -27,7 +27,7 @@ body {
 /* --- Header --- */
 .header {
   display: flex;
-  align-items: center; /* ✅ keeps everything centered */
+  align-items: center; /* keeps everything centered */
   gap: 8px;
   letter-spacing: 2px;
   padding: 10px 12px;
@@ -70,7 +70,7 @@ body {
 
 /* --- Pin list container (scrollable) --- */
 .pin-list-container {
-  max-height: 350px; /* ✅ limits popup growth */
+  max-height: 350px; /* limits popup growth */
   overflow-y: auto;
   overflow-x: hidden;
   /* background: #fafafa; */
@@ -404,5 +404,3 @@ body.theme-dark .pin-title-input {
 body.theme-light .pin-title-input {
   color: black;
 }
-
-

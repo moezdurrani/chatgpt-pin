@@ -84,7 +84,7 @@ function getNextAssistantMessage(userEl) {
 
     for (let i = index + 1; i < allMessages.length; i++) {
         if (allMessages[i].getAttribute("data-message-author-role") === "assistant") {
-            return allMessages[i]; // ✅ return element
+            return allMessages[i]; // return element
         }
     }
     return null;
@@ -123,7 +123,7 @@ function addPinButtons() {
         // titleBox.style.whiteSpace = "nowrap";
 
         titleBox.style.whiteSpace = "nowrap";
-        titleBox.style.overflowX = "auto";   // ✅ allow scroll
+        titleBox.style.overflowX = "auto";   // allow scroll
         titleBox.style.overflowY = "hidden";
         titleBox.style.textOverflow = "clip"; // disable ellipsis
         titleBox.style.display = "none";
@@ -382,7 +382,7 @@ chrome.runtime.onMessage.addListener((msg) => {
 
 setInterval(addPinButtons, 2000);
 
-// ✅ Pending scroll handling (unchanged from your working code)
+// Pending scroll handling (unchanged from your working code)
 window.addEventListener("load", () => {
     const currentConv = getConversationId();
     if (!currentConv) return;

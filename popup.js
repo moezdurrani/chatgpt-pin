@@ -116,10 +116,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const convUrl = `https://chat.openai.com/c/${pin.conversationId}`;
 
             if (activeTab && activeTab.url.includes(`/c/${pin.conversationId}`)) {
-              // ✅ Already in correct chat
+              // Already in correct chat
               chrome.tabs.sendMessage(activeTab.id, { action: "scrollToPin", pin });
             } else {
-              // ❌ Wrong chat → save pin for retry
+              // Wrong chat → save pin for retry
               chrome.storage.local.set({ pendingScrollPin: pin }, () => {
                 chrome.tabs.create({ url: convUrl });
               });
@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
     body.className = savedTheme;
     toggleIcon.src = chrome.runtime.getURL(icons[savedTheme]);
 
-    // ✅ only load pins after theme is applied
+    // only load pins after theme is applied
     loadPins();
   });
 
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     chrome.storage.local.set({ popupTheme: nextTheme });
 
-    // ✅ reload pins so icons update
+    // reload pins so icons update
     loadPins();
   });
 

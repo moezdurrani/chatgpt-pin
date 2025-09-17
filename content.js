@@ -77,19 +77,19 @@ function getConversationId() {
     return match ? match[1] : null;
 }
 
-// Find the *next assistant message* after this user message
 function getNextAssistantMessage(userEl) {
     const allMessages = Array.from(document.querySelectorAll("[data-message-id]"));
     const index = allMessages.indexOf(userEl);
-    if (index === -1) return "";
+    if (index === -1) return null;
 
     for (let i = index + 1; i < allMessages.length; i++) {
         if (allMessages[i].getAttribute("data-message-author-role") === "assistant") {
-            return allMessages[i].innerText;
+            return allMessages[i]; // ✅ return element
         }
     }
-    return "";
+    return null;
 }
+
 
 function addPinButtons() {
     document.querySelectorAll("[data-message-id]").forEach((el) => {
@@ -121,11 +121,12 @@ function addPinButtons() {
         titleBox.style.overflow = "hidden";
         // titleBox.style.textOverflow = "ellipsis";
         // titleBox.style.whiteSpace = "nowrap";
-        // titleBox.style.display = "none";
+
         titleBox.style.whiteSpace = "nowrap";
         titleBox.style.overflowX = "auto";   // ✅ allow scroll
         titleBox.style.overflowY = "hidden";
         titleBox.style.textOverflow = "clip"; // disable ellipsis
+        titleBox.style.display = "none";
 
         // --- Edit button (hidden unless pinned) ---
         const editBtn = document.createElement("button");
@@ -187,13 +188,26 @@ function addPinButtons() {
 
         // --- Pin/unpin logic ---
         pinBtn.addEventListener("click", () => {
-            const userText = el.innerText.trim();
-            const assistantText = getNextAssistantMessage(el);
+            // Clone user message (strip extension UI)
+            const clonedUserEl = el.cloneNode(true);
+            clonedUserEl.querySelectorAll(".pin-controls").forEach((c) => c.remove());
+            const userText = clonedUserEl.innerText.trim();
+            const userHtml = clonedUserEl.innerHTML;
 
-            const defaultTitle =
-                userText.length > 60 ? userText.slice(0, 60) + "…" : userText;
+            // Get assistant
+            const assistantEl = getNextAssistantMessage(el);
+            let assistantText = "";
+            let assistantHtml = "";
+            if (assistantEl) {
+                const clonedAssistantEl = assistantEl.cloneNode(true);
+                clonedAssistantEl.querySelectorAll(".pin-controls, .copy-btn, button").forEach((btn) => btn.remove());
+                assistantText = clonedAssistantEl.innerText.trim();
+                assistantHtml = clonedAssistantEl.innerHTML;
+            }
 
+            const defaultTitle = userText.length > 60 ? userText.slice(0, 60) + "…" : userText;
             const conversationId = getConversationId();
+
 
             chrome.storage.local.get(["pins"], (result) => {
                 let pins = result.pins || [];
@@ -205,7 +219,9 @@ function addPinButtons() {
                         conversationId,
                         title: defaultTitle,
                         user: userText,
+                        userHtml: userHtml,
                         assistant: assistantText,
+                        assistantHtml: assistantHtml,
                     });
                     chrome.storage.local.set({ pins });
                     icon.src = getIcon(true);
@@ -235,7 +251,7 @@ function addPinButtons() {
                 input.style.fontSize = "15px";
                 input.style.padding = "2px 4px";
                 input.style.borderRadius = "4px";
-                input.style.minWidth = "250px"; 
+                input.style.minWidth = "250px";
                 input.style.maxWidth = "300px";
                 applyInputTheme(input);
 
